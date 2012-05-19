@@ -37,10 +37,10 @@ abstract class Kohana_Kostache_Layout extends Kostache {
 		$partials = $this->_partials;
 
 		$partials[Kostache_Layout::CONTENT_PARTIAL] = $this->_template;
+        
+		$template = $this->_layout;
 
-		$template = $this->_load($this->_layout);
-
-		return $this->_stash($template, $this, $partials)->render();
+		return $this->_stash($template, $this, $partials);
 	}
 
 }

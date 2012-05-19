@@ -143,6 +143,6 @@ If you have a view that extends the Kostache_Layout class, but wish to render on
 
 For specific usage and documentation, see:
 
-[PHP Mustache](http://github.com/bobthecow/mustache.php)
+[Phly Mustache](http://github.com/weierophinney/phly_mustache)
 
 [Original Mustache](http://defunkt.github.com/mustache/)

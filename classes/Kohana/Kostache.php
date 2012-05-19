@@ -6,8 +6,10 @@
  * @category   Base
  * @author     Jeremy Bush <jeremy.bush@kohanaframework.org>
  * @author     Woody Gilk <woody.gilk@kohanaframework.org>
+ * @author     Devi Mandiri <me@devi.web.id>
  * @copyright  (c) 2010-2012 Jeremy Bush
  * @copyright  (c) 2011-2012 Woody Gilk
+ * @copyright  (c) 2012 Devi Mandiri
  * @license    MIT
  */
 abstract class Kohana_Kostache {
@@ -38,6 +40,16 @@ abstract class Kohana_Kostache {
 	}
 
 	/**
+	 * @var  object  Mustache object
+	 */
+	protected $_mustache;
+
+	/**
+	 * @var  string  Suffix used when resolving templates
+	 */
+	protected $_suffix = '.mustache';
+
+	/**
 	 * @var  string  Mustache template
 	 */
 	protected $_template;
@@ -48,7 +60,7 @@ abstract class Kohana_Kostache {
 	protected $_partials = array();
 
 	/**
-	 * Loads the template and partial paths.
+	 * Create Mustache object, assign template and partials.
 	 *
 	 * @param   string  template path
 	 * @param   array   partial paths
@@ -58,6 +70,10 @@ abstract class Kohana_Kostache {
 	 */
 	public function __construct($template = NULL, array $partials = NULL)
 	{
+		$this->_mustache = new Kohana_Mustache();
+
+		$this->_mustache->setSuffix($this->_suffix);
+
 		if ( ! $template)
 		{
 			if ($this->_template)
@@ -118,26 +134,25 @@ abstract class Kohana_Kostache {
 	}
 
 	/**
-	 * Loads a new template from a path.
+	 * Assign a new template.
 	 *
 	 * @return  Kostache
 	 */
-	public function template($path)
+	public function template($value)
 	{
-		$this->_template = $this->_load($path);
+		$this->_template = $value;
 
 		return $this;
 	}
 
 	/**
-	 * Loads a new partial from a path. If the path is empty, the partial will
-	 * be removed.
+	 * Assign new partial. If value is empty, the partial will be removed.
 	 *
 	 * @param   string  partial name
-	 * @param   mixed   partial path, FALSE to remove the partial
+	 * @param   mixed   partial value, FALSE to remove the partial
 	 * @return  Kostache
 	 */
-	public function partial($name, $path)
+	public function partial($name, $value)
 	{
 		if ( ! $path)
 		{
@@ -145,7 +160,7 @@ abstract class Kohana_Kostache {
 		}
 		else
 		{
-			$this->_partials[$name] = $this->_load($path);
+			$this->_partials[$name] = $value;
 		}
 
 		return $this;
@@ -210,7 +225,7 @@ abstract class Kohana_Kostache {
 	 */
 	public function render()
 	{
-		return $this->_stash($this->_template, $this, $this->_partials)->render();
+		return $this->_stash($this->_template, $this, $this->_partials);
 	}
 
 	/**
@@ -223,30 +238,7 @@ abstract class Kohana_Kostache {
 	 */
 	protected function _stash($template, Kostache $view, array $partials)
 	{
-		return new Kohana_Mustache($template, $view, $partials, array(
-			'charset' => Kohana::$charset,
-		));
-	}
-
-	/**
-	 * Load a template and return it.
-	 *
-	 * @param   string  template path
-	 * @return  string
-	 * @throws  Kohana_Exception  if the template does not exist
-	 */
-	protected function _load($path)
-	{
-		$file = Kohana::find_file('templates', $path, 'mustache');
-
-		if ( ! $file)
-		{
-			throw new Kohana_Exception('Template file does not exist: :path', array(
-				':path' => 'templates/'.$path,
-			));
-		}
-
-		return file_get_contents($file);
+		return $this->_mustache->render($template, $view, $partials);
 	}
 
 	/**
