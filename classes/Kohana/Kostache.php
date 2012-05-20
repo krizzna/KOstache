@@ -154,7 +154,7 @@ abstract class Kohana_Kostache {
 	 */
 	public function partial($name, $value)
 	{
-		if ( ! $path)
+		if ( ! $value)
 		{
 			unset($this->_partials[$name]);
 		}
